@@ -239,8 +239,8 @@ npm run dev
 
 ## 10. Contributors
 - **Akshit** — 3D Digital Twin & Hyperspectral Remote Sensing Simulation
-- **Person 2** — Survey Priority Engine, 10–12 Day Cycle Dynamics & Route Intelligence
-- **YOU (Person 3)** — Detection Screening, Incident Triage, Field Operations & Closed-Loop Verification
+- **Aashutosh Dubey** — Survey Priority Engine, 10–12 Day Cycle Dynamics & Route Intelligence
+- **Shruti Rai** — Detection Screening, Incident Triage, Field Operations & Closed-Loop Verification
 
 ---
 *Developed for Track 4: Cutting Fugitive Methane Emissions from City Gas Networks.*
