@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "title": "METHANOS 48-Hour Pre-Excavation Early Warning & Prevention Tickets",
+    "version": "1.0.0",
+    "total_notices": 3
+  },
+  "notices": [
+    {
+      "notice_id": "DIG-801",
+      "segment_id": "P-104",
+      "contractor_name": "Metro Fiber Net / Municipal Water",
+      "contractor_contact": "+91-98110-23456",
+      "notice_advance_hours": 52.0,
+      "is_compliant_48h": true,
+      "dig_depth_meters": 1.5,
+      "pipeline_depth_meters": 0.8,
+      "depth_clash_hazard": true,
+      "proximity_buffer_m": 8.5,
+      "status": "MONITOR_DISPATCHED",
+      "assigned_monitor": "Patrol Officer R. Sharma",
+      "safety_map_shared": true,
+      "safety_map_blueprint_url": "/api/dig-notices/DIG-801/map-blueprint",
+      "submitted_at": "2026-09-25T08:00:00Z",
+      "planned_start": "2026-09-27T12:00:00Z",
+      "alert_level": "HIGH_COMPLIANT_WARNING",
+      "notes": "Trenching for 5G optical fiber crossing directly over P-104 PE service line."
+    },
+    {
+      "notice_id": "DIG-802",
+      "segment_id": "P-106",
+      "contractor_name": "Rapid Road Boring Co.",
+      "contractor_contact": "+91-98711-98765",
+      "notice_advance_hours": 14.0,
+      "is_compliant_48h": false,
+      "dig_depth_meters": 2.2,
+      "pipeline_depth_meters": 1.1,
+      "depth_clash_hazard": true,
+      "proximity_buffer_m": 4.2,
+      "status": "SHORT_NOTICE_VIOLATION",
+      "assigned_monitor": null,
+      "safety_map_shared": false,
+      "safety_map_blueprint_url": "/api/dig-notices/DIG-802/map-blueprint",
+      "submitted_at": "2026-09-26T22:00:00Z",
+      "planned_start": "2026-09-27T12:00:00Z",
+      "alert_level": "URGENT_UNAUTHORIZED_EXCAVATION_RISK",
+      "notes": "Emergency culvert repair notice submitted only 14h before digging. Stop-work dispatched."
+    },
+    {
+      "notice_id": "DIG-803",
+      "segment_id": "P-107",
+      "contractor_name": "State Jal Board Water Main Team",
+      "contractor_contact": "+91-98101-55443",
+      "notice_advance_hours": 72.0,
+      "is_compliant_48h": true,
+      "dig_depth_meters": 1.0,
+      "pipeline_depth_meters": 1.5,
+      "depth_clash_hazard": false,
+      "proximity_buffer_m": 12.0,
+      "status": "ACTIVE_SUPERVISED",
+      "assigned_monitor": "Patrol Officer M. Verma",
+      "safety_map_shared": true,
+      "safety_map_blueprint_url": "/api/dig-notices/DIG-803/map-blueprint",
+      "submitted_at": "2026-09-24T09:00:00Z",
+      "planned_start": "2026-09-27T09:00:00Z",
+      "alert_level": "MONITORED_SAFE",
+      "notes": "Supervised manual digging with utility locator present on site."
+    }
+  ]
+}

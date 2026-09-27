@@ -1,0 +1,533 @@
+{
+  "metadata": {
+    "title": "METHANOS CGD Pipeline Segment Priority Data",
+    "version": "1.0.0",
+    "total_segments": 12,
+    "default_weights": {
+      "previous_incidents": 25.0,
+      "pe_vulnerability": 20.0,
+      "days_since_survey": 20.0,
+      "third_party_activity": 15.0,
+      "rodent_history": 10.0,
+      "public_consequence": 10.0
+    }
+  },
+  "segments": [
+    {
+      "segment_id": "P-110",
+      "score": 88,
+      "tier": "CRITICAL",
+      "material": "pe_service_hotspot",
+      "depth_meters": 0.6,
+      "operating_pressure_bar": 0.1,
+      "third_party_activity": "active_supervised",
+      "factors": {
+        "previous_incidents": 18,
+        "pe_vulnerability": 20,
+        "days_since_survey": 20,
+        "third_party_activity": 10,
+        "rodent_history": 10,
+        "public_consequence": 10
+      },
+      "location": {
+        "lat": 28.715,
+        "lng": 77.12
+      },
+      "name": "Rohini Sector 14 School Zone Service Line",
+      "polyline": [
+        [
+          28.7135,
+          77.118
+        ],
+        [
+          28.715,
+          77.12
+        ],
+        [
+          28.7165,
+          77.122
+        ]
+      ],
+      "last_survey_date": "2026-09-14",
+      "days_since_survey": 12,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 4,
+      "previous_incidents": 2,
+      "area_type": "sensitive(school/hospital/market)",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-104",
+      "score": 85,
+      "tier": "CRITICAL",
+      "material": "pe_service_hotspot",
+      "depth_meters": 0.8,
+      "operating_pressure_bar": 0.1,
+      "third_party_activity": "direct_excavation_hazard",
+      "factors": {
+        "previous_incidents": 18,
+        "pe_vulnerability": 20,
+        "days_since_survey": 15,
+        "third_party_activity": 15,
+        "rodent_history": 10,
+        "public_consequence": 7
+      },
+      "location": {
+        "lat": 28.6506,
+        "lng": 77.2303
+      },
+      "name": "Chandni Chowk Market Service Line",
+      "polyline": [
+        [
+          28.649,
+          77.228
+        ],
+        [
+          28.6506,
+          77.2303
+        ],
+        [
+          28.652,
+          77.2325
+        ]
+      ],
+      "last_survey_date": "2026-09-17",
+      "days_since_survey": 9,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 4,
+      "previous_incidents": 2,
+      "area_type": "dense_residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-109",
+      "score": 76,
+      "tier": "HIGH",
+      "material": "pe_distribution",
+      "depth_meters": 0.9,
+      "operating_pressure_bar": 4.0,
+      "third_party_activity": "active_supervised",
+      "factors": {
+        "previous_incidents": 18,
+        "pe_vulnerability": 15,
+        "days_since_survey": 20,
+        "third_party_activity": 10,
+        "rodent_history": 6,
+        "public_consequence": 7
+      },
+      "location": {
+        "lat": 28.5355,
+        "lng": 77.275
+      },
+      "name": "Okhla Industrial Area PE Sector",
+      "polyline": [
+        [
+          28.534,
+          77.273
+        ],
+        [
+          28.5355,
+          77.275
+        ],
+        [
+          28.537,
+          77.277
+        ]
+      ],
+      "last_survey_date": "2026-09-13",
+      "days_since_survey": 13,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 2,
+      "previous_incidents": 2,
+      "area_type": "dense_residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-108",
+      "score": 73,
+      "tier": "HIGH",
+      "material": "pe_service_hotspot",
+      "depth_meters": 0.7,
+      "operating_pressure_bar": 0.1,
+      "third_party_activity": "active_supervised",
+      "factors": {
+        "previous_incidents": 10,
+        "pe_vulnerability": 20,
+        "days_since_survey": 20,
+        "third_party_activity": 10,
+        "rodent_history": 6,
+        "public_consequence": 7
+      },
+      "location": {
+        "lat": 28.57,
+        "lng": 77.24
+      },
+      "name": "Lajpat Nagar Central Market PE Branch",
+      "polyline": [
+        [
+          28.5685,
+          77.238
+        ],
+        [
+          28.57,
+          77.24
+        ],
+        [
+          28.5715,
+          77.242
+        ]
+      ],
+      "last_survey_date": "2026-09-12",
+      "days_since_survey": 14,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 3,
+      "previous_incidents": 1,
+      "area_type": "dense_residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-107",
+      "score": 72,
+      "tier": "HIGH",
+      "material": "pe_distribution",
+      "depth_meters": 1.0,
+      "operating_pressure_bar": 4.0,
+      "third_party_activity": "planned_48h_notice",
+      "factors": {
+        "previous_incidents": 18,
+        "pe_vulnerability": 15,
+        "days_since_survey": 18.3,
+        "third_party_activity": 5,
+        "rodent_history": 6,
+        "public_consequence": 10
+      },
+      "location": {
+        "lat": 28.5672,
+        "lng": 77.21
+      },
+      "name": "AIIMS Medical Enclave Service Feeder",
+      "polyline": [
+        [
+          28.5655,
+          77.208
+        ],
+        [
+          28.5672,
+          77.21
+        ],
+        [
+          28.569,
+          77.212
+        ]
+      ],
+      "last_survey_date": "2026-09-15",
+      "days_since_survey": 11,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 2,
+      "previous_incidents": 2,
+      "area_type": "sensitive(school/hospital/market)",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-106",
+      "score": 63,
+      "tier": "MEDIUM",
+      "material": "pe_distribution",
+      "depth_meters": 1.0,
+      "operating_pressure_bar": 4.0,
+      "third_party_activity": "planned_48h_notice",
+      "factors": {
+        "previous_incidents": 10,
+        "pe_vulnerability": 15,
+        "days_since_survey": 20,
+        "third_party_activity": 5,
+        "rodent_history": 6,
+        "public_consequence": 7
+      },
+      "location": {
+        "lat": 28.652,
+        "lng": 77.19
+      },
+      "name": "Karol Bagh High-Density PE Grid",
+      "polyline": [
+        [
+          28.6505,
+          77.188
+        ],
+        [
+          28.652,
+          77.19
+        ],
+        [
+          28.6535,
+          77.192
+        ]
+      ],
+      "last_survey_date": "2026-09-14",
+      "days_since_survey": 12,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 2,
+      "previous_incidents": 1,
+      "area_type": "dense_residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-112",
+      "score": 60,
+      "tier": "MEDIUM",
+      "material": "pe_service_hotspot",
+      "depth_meters": 0.75,
+      "operating_pressure_bar": 0.1,
+      "third_party_activity": "planned_48h_notice",
+      "factors": {
+        "previous_incidents": 10,
+        "pe_vulnerability": 20,
+        "days_since_survey": 11.7,
+        "third_party_activity": 5,
+        "rodent_history": 6,
+        "public_consequence": 7
+      },
+      "location": {
+        "lat": 28.5494,
+        "lng": 77.195
+      },
+      "name": "Hauz Khas Village PE Hotspot",
+      "polyline": [
+        [
+          28.548,
+          77.193
+        ],
+        [
+          28.5494,
+          77.195
+        ],
+        [
+          28.551,
+          77.197
+        ]
+      ],
+      "last_survey_date": "2026-09-19",
+      "days_since_survey": 7,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 2,
+      "previous_incidents": 1,
+      "area_type": "dense_residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-105",
+      "score": 55,
+      "tier": "MEDIUM",
+      "material": "pe_distribution",
+      "depth_meters": 1.2,
+      "operating_pressure_bar": 4.0,
+      "third_party_activity": "planned_48h_notice",
+      "factors": {
+        "previous_incidents": 10,
+        "pe_vulnerability": 15,
+        "days_since_survey": 16.7,
+        "third_party_activity": 5,
+        "rodent_history": 3,
+        "public_consequence": 5
+      },
+      "location": {
+        "lat": 28.5244,
+        "lng": 77.2167
+      },
+      "name": "Saket Commercial Hub Feeder",
+      "polyline": [
+        [
+          28.523,
+          77.2145
+        ],
+        [
+          28.5244,
+          77.2167
+        ],
+        [
+          28.526,
+          77.219
+        ]
+      ],
+      "last_survey_date": "2026-09-16",
+      "days_since_survey": 10,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 1,
+      "previous_incidents": 1,
+      "area_type": "residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-103",
+      "score": 41,
+      "tier": "MEDIUM",
+      "material": "pe_distribution",
+      "depth_meters": 1.1,
+      "operating_pressure_bar": 4.0,
+      "third_party_activity": "none",
+      "factors": {
+        "previous_incidents": 10,
+        "pe_vulnerability": 15,
+        "days_since_survey": 8.3,
+        "third_party_activity": 0,
+        "rodent_history": 3,
+        "public_consequence": 5
+      },
+      "location": {
+        "lat": 28.609,
+        "lng": 77.295
+      },
+      "name": "Mayur Vihar Phase 1 PE Line",
+      "polyline": [
+        [
+          28.6075,
+          77.293
+        ],
+        [
+          28.609,
+          77.295
+        ],
+        [
+          28.6105,
+          77.297
+        ]
+      ],
+      "last_survey_date": "2026-09-21",
+      "days_since_survey": 5,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 1,
+      "previous_incidents": 1,
+      "area_type": "residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-111",
+      "score": 27,
+      "tier": "LOW",
+      "material": "pe_distribution",
+      "depth_meters": 1.2,
+      "operating_pressure_bar": 4.0,
+      "third_party_activity": "none",
+      "factors": {
+        "previous_incidents": 0,
+        "pe_vulnerability": 15,
+        "days_since_survey": 6.7,
+        "third_party_activity": 0,
+        "rodent_history": 0,
+        "public_consequence": 5
+      },
+      "location": {
+        "lat": 28.5921,
+        "lng": 77.065
+      },
+      "name": "Dwarka Sector 6 PE Feeder",
+      "polyline": [
+        [
+          28.5905,
+          77.063
+        ],
+        [
+          28.5921,
+          77.065
+        ],
+        [
+          28.594,
+          77.067
+        ]
+      ],
+      "last_survey_date": "2026-09-22",
+      "days_since_survey": 4,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 0,
+      "previous_incidents": 0,
+      "area_type": "residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-102",
+      "score": 23,
+      "tier": "LOW",
+      "material": "steel_main",
+      "depth_meters": 1.4,
+      "operating_pressure_bar": 16.0,
+      "third_party_activity": "none",
+      "factors": {
+        "previous_incidents": 0,
+        "pe_vulnerability": 5,
+        "days_since_survey": 13.3,
+        "third_party_activity": 0,
+        "rodent_history": 0,
+        "public_consequence": 5
+      },
+      "location": {
+        "lat": 28.591,
+        "lng": 77.222
+      },
+      "name": "Lodhi Road Feeder Main",
+      "polyline": [
+        [
+          28.5895,
+          77.2195
+        ],
+        [
+          28.591,
+          77.222
+        ],
+        [
+          28.5925,
+          77.2245
+        ]
+      ],
+      "last_survey_date": "2026-09-18",
+      "days_since_survey": 8,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 0,
+      "previous_incidents": 0,
+      "area_type": "residential",
+      "monsoon_mode": false
+    },
+    {
+      "segment_id": "P-101",
+      "score": 10,
+      "tier": "LOW",
+      "material": "steel_main",
+      "depth_meters": 1.6,
+      "operating_pressure_bar": 19.0,
+      "third_party_activity": "none",
+      "factors": {
+        "previous_incidents": 0,
+        "pe_vulnerability": 5,
+        "days_since_survey": 3.3,
+        "third_party_activity": 0,
+        "rodent_history": 0,
+        "public_consequence": 2
+      },
+      "location": {
+        "lat": 28.6295,
+        "lng": 77.2285
+      },
+      "name": "Barakhamba Steel Transmission Main",
+      "polyline": [
+        [
+          28.628,
+          77.226
+        ],
+        [
+          28.6295,
+          77.2285
+        ],
+        [
+          28.631,
+          77.231
+        ]
+      ],
+      "last_survey_date": "2026-09-24",
+      "days_since_survey": 2,
+      "target_survey_cycle": 12,
+      "rodent_incidents": 0,
+      "previous_incidents": 0,
+      "area_type": "low_density",
+      "monsoon_mode": false
+    }
+  ]
+}

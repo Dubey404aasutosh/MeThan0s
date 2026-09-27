@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>METHANOS — City Gas Distribution Network Priority & Prevention Dashboard</title>
+  <meta name="description" content="Operational intelligence layer for urban City Gas Distribution methane leak prevention, survey prioritization, and 48-hour excavation risk control.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- App Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+  <!-- Top Navigation / Telemetry Header -->
+  <header class="app-header" id="appHeader">
+    <div class="header-left">
+      <div class="brand-container">
+        <div class="brand-radar-glow"></div>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <div class="brand-name">METHANOS <span class="brand-tag">INTELLIGENCE</span></div>
+          <div class="brand-sub">CGD Fugitive Methane & Excavation Risk Control Room</div>
+        </div>
+      </div>
+      <div class="system-status-chip" id="systemStatusChip">
+        <span class="pulse-dot"></span>
+        <span class="status-text" id="statusConnectionText">API CONNECTED</span>
+      </div>
+    </div>
+
+    <!-- Quick Telemetry Stats Bar -->
+    <div class="header-stats-bar">
+      <div class="stat-pill" id="statTotalSegments">
+        <span class="stat-label">NETWORK PIPELINES</span>
+        <span class="stat-value" id="kpiTotalSegments">12</span>
+      </div>
+      <div class="stat-pill stat-critical" id="statCriticalTiers">
+        <span class="stat-label">CRITICAL TIERS</span>
+        <span class="stat-value" id="kpiCriticalCount">2</span>
+      </div>
+      <div class="stat-pill stat-warning" id="statDigAlerts">
+        <span class="stat-label">48H DIG ALERTS</span>
+        <span class="stat-value" id="kpiDigAlerts">3</span>
+      </div>
+      <div class="stat-pill" id="statMonsoonMode">
+        <span class="stat-label">MONSOON RISK</span>
+        <span class="stat-badge" id="kpiMonsoonStatus">OFF</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="clock-display" id="clockDisplay">
+        <div class="clock-time" id="realTimeClock">00:00:00 UTC</div>
+        <div class="clock-date" id="realDateClock">DELHI CGD GRID</div>
+      </div>
+      <button class="btn-demo-guide" id="btnToggleDemoGuide" title="Interactive 7-Step Hackathon Demo Script (PRD §12)">
+        <span class="guide-sparkle">🎯</span>
+        <span>DEMO GUIDE</span>
+      </button>
+      <button class="btn-dispatch-board" id="btnOpenDispatchModal" title="3-Column Route & Team Assignment Board (PRD §11 & §12)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/>
+          <rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span>ROUTE BOARD</span>
+      </button>
+      <button class="btn-calibrator" id="btnToggleCalibrator" title="Open Weight Calibration Sliders">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="4" y1="21" x2="4" y2="14"/>
+          <line x1="4" y1="10" x2="4" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12" y2="3"/>
+          <line x1="20" y1="21" x2="20" y2="16"/>
+          <line x1="20" y1="12" x2="20" y2="3"/>
+          <line x1="1" y1="14" x2="7" y2="14"/>
+          <line x1="9" y1="8" x2="15" y2="8"/>
+          <line x1="17" y1="16" x2="23" y2="16"/>
+        </svg>
+        <span>CALIBRATE WEIGHTS</span>
+      </button>
+      <button class="btn-emergency-report" id="btnOpenEmergencyModal" title="Simulate Emergency Construction Strike (PRD §8B & §12)">
+        <span class="strobe-dot"></span>
+        <span>REPORT INCIDENT</span>
+      </button>
+      <button class="btn-refresh" id="btnRefreshData" title="Refresh Live Network Data">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+        </svg>
+        <span>SYNC</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Layout -->
+  <main class="main-layout">
+    <!-- Left Sidebar: Segment Explorer & Tier Filters -->
+    <aside class="sidebar-segments" id="sidebarSegments">
+      <div class="sidebar-header">
+        <div class="sidebar-title-row">
+          <h2 class="section-title">Pipeline Segments</h2>
+          <span class="badge-count" id="segmentCountBadge">12</span>
+        </div>
+        <!-- Tier Filter Tabs -->
+        <div class="tier-filter-tabs" id="tierFilterTabs">
+          <button class="filter-tab active" data-tier="ALL" id="filterTabAll">ALL</button>
+          <button class="filter-tab tab-critical" data-tier="CRITICAL" id="filterTabCritical">CRITICAL (2)</button>
+          <button class="filter-tab tab-high" data-tier="HIGH" id="filterTabHigh">HIGH (3)</button>
+          <button class="filter-tab tab-medium" data-tier="MEDIUM" id="filterTabMedium">MED (4)</button>
+          <button class="filter-tab tab-low" data-tier="LOW" id="filterTabLow">LOW (3)</button>
+        </div>
+        <div class="search-sort-row">
+          <input type="text" id="segmentSearchInput" class="search-input" placeholder="Search by ID, name or material...">
+        </div>
+      </div>
+
+      <!-- Segment Cards Scrollable List -->
+      <div class="segment-list-scroll" id="segmentListContainer">
+        <!-- Rendered dynamically by app.js -->
+        <div class="loading-spinner-box">
+          <div class="spinner"></div>
+          <span>Loading CGD Pipeline Network...</span>
+        </div>
+      </div>
+
+      <!-- Tier Legend Footer -->
+      <div class="tier-legend-footer">
+        <div class="legend-item"><span class="legend-dot dot-critical"></span> 85-100 Critical</div>
+        <div class="legend-item"><span class="legend-dot dot-high"></span> 70-84 High</div>
+        <div class="legend-item"><span class="legend-dot dot-medium"></span> 40-69 Medium</div>
+        <div class="legend-item"><span class="legend-dot dot-low"></span> 0-39 Low</div>
+      </div>
+    </aside>
+
+    <!-- Center Section: Interactive GIS Map & View Toggle -->
+    <section class="map-workspace" id="mapWorkspace">
+      <!-- Map Overlay Controls -->
+      <div class="map-controls-floating">
+        <div class="map-control-group">
+          <button class="map-btn active" id="btnViewMap" title="Geospatial Map View">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+              <line x1="8" y1="2" x2="8" y2="18"/>
+              <line x1="16" y1="6" x2="16" y2="22"/>
+            </svg>
+            <span>GIS Map</span>
+          </button>
+          <button class="map-btn" id="btnFocusBenchmark" title="Focus P-104 Benchmark Segment">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span>Focus P-104</span>
+          </button>
+          <button class="map-btn" id="btnResetMapView" title="Reset Network View">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9"/>
+              <polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/>
+              <line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+            <span>Fit All</span>
+          </button>
+        </div>
+
+        <div class="map-control-group">
+          <div class="map-indicator-badge">
+            <span class="live-blink"></span>
+            <span>ACTIVE GIS LAYER: DELHI CGD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Control Room Excavation Alert Banner (PRD §8A) -->
+      <div class="map-alert-banner" id="mapAlertBanner" style="display: none;">
+        <div class="alert-banner-left">
+          <span class="alert-pulse-icon">🚨</span>
+          <div class="alert-text-block">
+            <span class="alert-headline" id="alertBannerHeadline">48H PRE-EXCAVATION HAZARD ACTIVE</span>
+            <span class="alert-sub" id="alertBannerSub">DIG-801 on P-104: Metro Fiber Net trenching 1.5m deep over 0.8m PE gas line.</span>
+          </div>
+        </div>
+        <div class="alert-banner-actions">
+          <button class="btn-banner-action" id="btnBannerViewDig">View Notice</button>
+          <button class="btn-banner-dismiss" id="btnBannerDismiss" title="Dismiss Alert">&times;</button>
+        </div>
+      </div>
+
+      <!-- Leaflet Map Container -->
+      <div id="leafletMap" class="leaflet-map-canvas"></div>
+
+      <!-- Bottom Status Bar on Map -->
+      <div class="map-bottom-telemetry">
+        <div class="telemetry-item">
+          <span class="t-label">SURVEY PRIORITY FORMULA:</span>
+          <span class="t-value">PNGRB 6-Factor Integrity Model</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="t-label">REFERENCE CALIBRATION:</span>
+          <span class="t-value highlight">P-104 = 85 (CRITICAL)</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="t-label">COORDINATE SYSTEM:</span>
+          <span class="t-value">WGS84 EPSG:4326</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Inspector: Segment GIS Detail & 6-Factor Score Breakdown -->
+    <aside class="detail-inspector" id="detailInspector">
+      <!-- Inspector Mode Tabs -->
+      <div class="inspector-tabs-bar" id="inspectorTabsBar">
+        <button class="inspector-tab active" id="tabSegmentInspector" data-target="panelSegmentDetail">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="21" x2="9" y2="9"/>
+          </svg>
+          <span>Segment Profile</span>
+        </button>
+        <button class="inspector-tab" id="tabWeightCalibrator" data-target="panelWeightSliders">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="4" y1="21" x2="4" y2="14"/>
+            <line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/>
+            <line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/>
+            <line x1="9" y1="8" x2="15" y2="8"/>
+            <line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+          <span>Weight Sliders</span>
+          <span class="tab-indicator-badge" id="sliderWeightsSumBadge">100 pts</span>
+        </button>
+        <button class="inspector-tab" id="tabDigNotices" data-target="panelDigNotices">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 22 22 22 12 2"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>48H Dig Alerts</span>
+          <span class="tab-indicator-badge badge-alert-dot" id="tabDigAlertsBadge">3</span>
+        </button>
+        <button class="inspector-tab" id="tabConfidenceQC" data-target="panelConfidenceQC">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>Survey QC</span>
+          <span class="tab-indicator-badge badge-qc" id="tabQCBadge">QC</span>
+        </button>
+      </div>
+
+      <!-- Panel 1: Segment Detail Profile -->
+      <div class="inspector-panel" id="panelSegmentDetail">
+        <div class="inspector-empty-state" id="inspectorEmptyState">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <h3>Select a Pipeline Segment</h3>
+          <p>Click any pipeline on the GIS map or choose from the segment list to inspect its 6-factor priority breakdown, burial depth, and operating pressure.</p>
+          <button class="btn-primary-sm" id="btnSelectP104Default">View Benchmark (P-104)</button>
+        </div>
+
+        <!-- Active Segment Detail View -->
+        <div class="inspector-content" id="inspectorContent" style="display: none;">
+        <!-- Header: Segment ID, Name, Tier Badge -->
+        <div class="detail-header">
+          <div class="detail-title-block">
+            <div class="detail-id-row">
+              <span class="detail-segment-id" id="detailSegmentId">P-104</span>
+              <span class="tier-pill tier-pill-critical" id="detailTierPill">CRITICAL</span>
+            </div>
+            <h3 class="detail-name" id="detailName">Chandni Chowk Market Service Line</h3>
+            <span class="detail-area-type" id="detailAreaType">dense_residential</span>
+          </div>
+
+          <!-- Total Score Gauge -->
+          <div class="score-gauge-card" id="detailScoreGauge">
+            <div class="gauge-ring">
+              <svg viewBox="0 0 100 100" class="circular-progress">
+                <circle class="bg" cx="50" cy="50" r="42" />
+                <circle class="fg fg-critical" id="gaugeProgressCircle" cx="50" cy="50" r="42" />
+              </svg>
+              <div class="gauge-value-block">
+                <span class="gauge-number" id="detailScoreNumber">85</span>
+                <span class="gauge-max">/100</span>
+              </div>
+            </div>
+            <span class="gauge-label">SURVEY PRIORITY SCORE</span>
+          </div>
+        </div>
+
+        <!-- GIS Asset Metadata Cards (Crucial PRD Requirement) -->
+        <div class="gis-metadata-section">
+          <h4 class="inspector-subheading">GIS UNDERGROUND ASSET PROFILE</h4>
+          <div class="gis-grid">
+            <div class="gis-card" id="gisCardDepth">
+              <div class="gis-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 3v18M8 17l4 4 4-4M8 7l4-4 4 4"/>
+                </svg>
+              </div>
+              <div class="gis-info">
+                <span class="gis-label">BURIAL DEPTH</span>
+                <span class="gis-val" id="detailDepth">0.8 m</span>
+                <span class="gis-tag tag-shallow" id="detailDepthTag">Shallow (&lt;1.0m)</span>
+              </div>
+            </div>
+
+            <div class="gis-card" id="gisCardPressure">
+              <div class="gis-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 7v5l3 3"/>
+                </svg>
+              </div>
+              <div class="gis-info">
+                <span class="gis-label">OPERATING PRESSURE</span>
+                <span class="gis-val" id="detailPressure">0.10 bar</span>
+                <span class="gis-tag" id="detailPressureTag">PE Low Pressure</span>
+              </div>
+            </div>
+
+            <div class="gis-card" id="gisCardMaterial">
+              <div class="gis-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="7" width="20" height="10" rx="2"/>
+                  <line x1="6" y1="7" x2="6" y2="17"/>
+                  <line x1="18" y1="7" x2="18" y2="17"/>
+                </svg>
+              </div>
+              <div class="gis-info">
+                <span class="gis-label">PIPELINE MATERIAL</span>
+                <span class="gis-val text-capitalize" id="detailMaterial">PE Service Hotspot</span>
+                <span class="gis-tag tag-vuln" id="detailMaterialTag">High Vulnerability</span>
+              </div>
+            </div>
+
+            <div class="gis-card" id="gisCardThirdParty">
+              <div class="gis-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 2 22 22 22 12 2"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <div class="gis-info">
+                <span class="gis-label">EXCAVATION STATUS</span>
+                <span class="gis-val text-capitalize" id="detailExcavation">Direct Hazard</span>
+                <span class="gis-tag tag-alert" id="detailExcavationTag">48H Notice Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6-Factor Priority Breakdown (PRD §6 Benchmark) -->
+        <div class="factors-section">
+          <div class="factors-header">
+            <h4 class="inspector-subheading">6-FACTOR INTEGRITY WEIGHT BREAKDOWN</h4>
+            <span class="formula-note">Sum = Priority Score</span>
+          </div>
+
+          <div class="factors-list" id="factorBarsList">
+            <!-- Factor 1: Previous Incidents (Max 25) -->
+            <div class="factor-row" id="factorRowIncidents">
+              <div class="factor-top">
+                <span class="factor-name">1. Previous Incidents</span>
+                <span class="factor-points"><strong id="fPtsIncidents">18</strong> / 25 pts</span>
+              </div>
+              <div class="factor-bar-bg">
+                <div class="factor-bar-fill bar-fill-incidents" id="fBarIncidents" style="width: 72%;"></div>
+              </div>
+              <span class="factor-desc" id="fDescIncidents">2 historical leak/incident events</span>
+            </div>
+
+            <!-- Factor 2: PE Vulnerability (Max 20) -->
+            <div class="factor-row" id="factorRowVuln">
+              <div class="factor-top">
+                <span class="factor-name">2. PE / Material Vulnerability</span>
+                <span class="factor-points"><strong id="fPtsVuln">20</strong> / 20 pts</span>
+              </div>
+              <div class="factor-bar-bg">
+                <div class="factor-bar-fill bar-fill-vuln" id="fBarVuln" style="width: 100%;"></div>
+              </div>
+              <span class="factor-desc" id="fDescVuln">PE Service Line Hotspot (Max Risk)</span>
+            </div>
+
+            <!-- Factor 3: Days Since Survey (Max 20) -->
+            <div class="factor-row" id="factorRowDays">
+              <div class="factor-top">
+                <span class="factor-name">3. Survey Recency & Elapsed Time</span>
+                <span class="factor-points"><strong id="fPtsDays">15</strong> / 20 pts</span>
+              </div>
+              <div class="factor-bar-bg">
+                <div class="factor-bar-fill bar-fill-days" id="fBarDays" style="width: 75%;"></div>
+              </div>
+              <span class="factor-desc" id="fDescDays">9 days elapsed of 12-day inspection target cycle</span>
+            </div>
+
+            <!-- Factor 4: Third-Party Dig Activity (Max 15) -->
+            <div class="factor-row" id="factorRowDig">
+              <div class="factor-top">
+                <span class="factor-name">4. Third-Party Dig Activity</span>
+                <span class="factor-points"><strong id="fPtsDig">15</strong> / 15 pts</span>
+              </div>
+              <div class="factor-bar-bg">
+                <div class="factor-bar-fill bar-fill-dig" id="fBarDig" style="width: 100%;"></div>
+              </div>
+              <span class="factor-desc" id="fDescDig">Direct excavation hazard in immediate vicinity</span>
+            </div>
+
+            <!-- Factor 5: Rodent History (Max 10) -->
+            <div class="factor-row" id="factorRowRodent">
+              <div class="factor-top">
+                <span class="factor-name">5. Rodent Damage History</span>
+                <span class="factor-points"><strong id="fPtsRodent">10</strong> / 10 pts</span>
+              </div>
+              <div class="factor-bar-bg">
+                <div class="factor-bar-fill bar-fill-rodent" id="fBarRodent" style="width: 100%;"></div>
+              </div>
+              <span class="factor-desc" id="fDescRodent">4 past rodent gnawing incidents recorded</span>
+            </div>
+
+            <!-- Factor 6: Public Consequence (Max 10) -->
+            <div class="factor-row" id="factorRowPublic">
+              <div class="factor-top">
+                <span class="factor-name">6. Public Consequence & Receptor Density</span>
+                <span class="factor-points"><strong id="fPtsPublic">7</strong> / 10 pts</span>
+              </div>
+              <div class="factor-bar-bg">
+                <div class="factor-bar-fill bar-fill-public" id="fBarPublic" style="width: 70%;"></div>
+              </div>
+              <span class="factor-desc" id="fDescPublic">Dense residential / high footfall urban zone</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Trigger for Segment -->
+        <div class="detail-actions-panel">
+          <button class="btn-action btn-dispatch" id="btnDispatchTeamSurvey">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+            <span>Assign Priority Survey Route</span>
+          </button>
+          <button class="btn-action btn-repair" id="btnSimulateRepair">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+            <span>Log Repair &amp; Recalculate</span>
+          </button>
+          <button class="btn-action btn-danger" id="btnReportIncidentDirect" title="Escalate to CRITICAL instantly (PRD §8B)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 22 22 22 12 2"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>Report Excavation Breach (Escalate to 100)</span>
+          </button>
+        </div>
+      </div>
+      </div>
+
+      <!-- Panel 2: Weight Calibration Sliders (Phase 2 Deliverable) -->
+      <div class="inspector-panel panel-calibrator" id="panelWeightSliders" style="display: none;">
+        <div class="calibrator-header">
+          <div class="calibrator-title-row">
+            <h3 class="calibrator-title">Priority Engine Sliders</h3>
+            <span class="badge-calibrator">LIVE RECOMPUTE</span>
+          </div>
+          <p class="calibrator-desc">Calibrate PNGRB risk weights in real time. Drag sliders to watch pipeline priority tiers, scores, and map routes re-evaluate live.</p>
+          
+          <!-- Sum of weights progress card -->
+          <div class="weight-sum-card" id="weightSumCard">
+            <div class="weight-sum-top">
+              <span class="sum-label">TOTAL FACTOR WEIGHTS:</span>
+              <span class="sum-value" id="currentWeightSum">100 <span class="sum-max">/ 100 pts</span></span>
+            </div>
+            <div class="weight-sum-bar">
+              <div class="sum-bar-fill" id="weightSumBarFill" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preset Profiles Row -->
+        <div class="presets-section">
+          <span class="presets-label">CALIBRATION PRESETS:</span>
+          <div class="presets-grid">
+            <button class="btn-preset active" id="btnPresetDefault" data-preset="default">PNGRB Standard</button>
+            <button class="btn-preset" id="btnPresetDig" data-preset="excavation">Excavation Threat</button>
+            <button class="btn-preset" id="btnPresetRodent" data-preset="rodent">Rodent/PE Aging</button>
+            <button class="btn-preset btn-preset-reset" id="btnResetWeights">Reset Default</button>
+          </div>
+        </div>
+
+        <!-- Seasonal Monsoon Mode Card (PRD Stretch Goal) -->
+        <div class="monsoon-toggle-card" id="monsoonCard">
+          <div class="monsoon-info">
+            <div class="monsoon-title-row">
+              <span class="monsoon-icon">🌧️</span>
+              <span class="monsoon-name">Monsoon Rain Modifier</span>
+              <span class="monsoon-tag" id="monsoonTag">INACTIVE</span>
+            </div>
+            <p class="monsoon-desc">Simulates rain-induced soil erosion & moisture ingress. Multiplies PE vulnerability by 1.25x.</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleMonsoonMode">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Normalization Checkbox -->
+        <div class="normalize-row">
+          <label class="checkbox-container">
+            <input type="checkbox" id="chkNormalizeTo100">
+            <span class="checkmark"></span>
+            <span class="checkbox-label">Auto-normalize total weights to 100% scale</span>
+          </label>
+        </div>
+
+        <!-- 6 Sliders List -->
+        <div class="sliders-container">
+          <!-- Slider 1: Previous Incidents -->
+          <div class="slider-group" id="sliderGroupIncidents">
+            <div class="slider-header-row">
+              <div class="slider-name-wrap">
+                <span class="slider-index">1</span>
+                <span class="slider-title">Previous Incidents</span>
+              </div>
+              <div class="slider-val-wrap">
+                <span class="slider-val-badge" id="valPreviousIncidents">25 pts</span>
+                <span class="slider-default-label">(Default: 25)</span>
+              </div>
+            </div>
+            <input type="range" class="risk-slider slider-incidents" id="sliderPreviousIncidents" min="0" max="50" step="1" value="25">
+            <div class="slider-scale-row">
+              <span>0 (Ignore)</span>
+              <span class="slider-center-mark">| 25 Baseline</span>
+              <span>50 (Max)</span>
+            </div>
+          </div>
+
+          <!-- Slider 2: PE Vulnerability -->
+          <div class="slider-group" id="sliderGroupVuln">
+            <div class="slider-header-row">
+              <div class="slider-name-wrap">
+                <span class="slider-index">2</span>
+                <span class="slider-title">PE Vulnerability</span>
+              </div>
+              <div class="slider-val-wrap">
+                <span class="slider-val-badge" id="valPeVulnerability">20 pts</span>
+                <span class="slider-default-label">(Default: 20)</span>
+              </div>
+            </div>
+            <input type="range" class="risk-slider slider-vuln" id="sliderPeVulnerability" min="0" max="50" step="1" value="20">
+            <div class="slider-scale-row">
+              <span>0 (Ignore)</span>
+              <span class="slider-center-mark">| 20 Baseline</span>
+              <span>50 (Max)</span>
+            </div>
+          </div>
+
+          <!-- Slider 3: Days Since Survey -->
+          <div class="slider-group" id="sliderGroupDays">
+            <div class="slider-header-row">
+              <div class="slider-name-wrap">
+                <span class="slider-index">3</span>
+                <span class="slider-title">Days Since Survey</span>
+              </div>
+              <div class="slider-val-wrap">
+                <span class="slider-val-badge" id="valDaysSinceSurvey">20 pts</span>
+                <span class="slider-default-label">(Default: 20)</span>
+              </div>
+            </div>
+            <input type="range" class="risk-slider slider-days" id="sliderDaysSinceSurvey" min="0" max="50" step="1" value="20">
+            <div class="slider-scale-row">
+              <span>0 (Ignore)</span>
+              <span class="slider-center-mark">| 20 Baseline</span>
+              <span>50 (Max)</span>
+            </div>
+          </div>
+
+          <!-- Slider 4: Third-Party Dig Activity -->
+          <div class="slider-group" id="sliderGroupDig">
+            <div class="slider-header-row">
+              <div class="slider-name-wrap">
+                <span class="slider-index">4</span>
+                <span class="slider-title">Third-Party Dig Activity</span>
+              </div>
+              <div class="slider-val-wrap">
+                <span class="slider-val-badge" id="valThirdPartyActivity">15 pts</span>
+                <span class="slider-default-label">(Default: 15)</span>
+              </div>
+            </div>
+            <input type="range" class="risk-slider slider-dig" id="sliderThirdPartyActivity" min="0" max="50" step="1" value="15">
+            <div class="slider-scale-row">
+              <span>0 (Ignore)</span>
+              <span class="slider-center-mark">| 15 Baseline</span>
+              <span>50 (Max)</span>
+            </div>
+          </div>
+
+          <!-- Slider 5: Rodent Damage History -->
+          <div class="slider-group" id="sliderGroupRodent">
+            <div class="slider-header-row">
+              <div class="slider-name-wrap">
+                <span class="slider-index">5</span>
+                <span class="slider-title">Rodent Damage History</span>
+              </div>
+              <div class="slider-val-wrap">
+                <span class="slider-val-badge" id="valRodentHistory">10 pts</span>
+                <span class="slider-default-label">(Default: 10)</span>
+              </div>
+            </div>
+            <input type="range" class="risk-slider slider-rodent" id="sliderRodentHistory" min="0" max="50" step="1" value="10">
+            <div class="slider-scale-row">
+              <span>0 (Ignore)</span>
+              <span class="slider-center-mark">| 10 Baseline</span>
+              <span>50 (Max)</span>
+            </div>
+          </div>
+
+          <!-- Slider 6: Public Consequence -->
+          <div class="slider-group" id="sliderGroupPublic">
+            <div class="slider-header-row">
+              <div class="slider-name-wrap">
+                <span class="slider-index">6</span>
+                <span class="slider-title">Public Consequence</span>
+              </div>
+              <div class="slider-val-wrap">
+                <span class="slider-val-badge" id="valPublicConsequence">10 pts</span>
+                <span class="slider-default-label">(Default: 10)</span>
+              </div>
+            </div>
+            <input type="range" class="risk-slider slider-public" id="sliderPublicConsequence" min="0" max="50" step="1" value="10">
+            <div class="slider-scale-row">
+              <span>0 (Ignore)</span>
+              <span class="slider-center-mark">| 10 Baseline</span>
+              <span>50 (Max)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: 48-Hour Dig Early Warning & Prevention Feed (Phase 3 Deliverable) -->
+      <div class="inspector-panel panel-dig-feed" id="panelDigNotices" style="display: none;">
+        <div class="calibrator-header">
+          <div class="calibrator-title-row">
+            <h3 class="calibrator-title">48-Hr Excavation Feed</h3>
+            <span class="badge-calibrator badge-prevention">PRE-EXCAVATION</span>
+          </div>
+          <p class="calibrator-desc">PNGRB Mandatory 48-Hour Advance Notice &amp; Depth Conflict Prevention. Dispatches on-site monitors and issues safety blueprints before digging begins.</p>
+          
+          <!-- Summary Metrics Row -->
+          <div class="dig-kpi-summary">
+            <div class="dig-kpi-box">
+              <span class="dig-kpi-val" id="digKpiTotal">3</span>
+              <span class="dig-kpi-label">TOTAL NOTICES</span>
+            </div>
+            <div class="dig-kpi-box box-compliant">
+              <span class="dig-kpi-val" id="digKpiCompliant">2</span>
+              <span class="dig-kpi-label">&ge;48H COMPLIANT</span>
+            </div>
+            <div class="dig-kpi-box box-violation">
+              <span class="dig-kpi-val" id="digKpiViolation">1</span>
+              <span class="dig-kpi-label">SHORT-NOTICE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Excavation Notices List Container -->
+        <div class="dig-tickets-scroll" id="digTicketsContainer">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+
+      <!-- Panel 4: Survey Confidence QC Engine (Phase 4 Deliverable) -->
+      <div class="inspector-panel panel-confidence-qc" id="panelConfidenceQC" style="display: none;">
+        <div class="calibrator-header">
+          <div class="calibrator-title-row">
+            <h3 class="calibrator-title">Survey Confidence QC</h3>
+            <span class="badge-calibrator badge-qc-tag">TRUST LAYER</span>
+          </div>
+          <p class="calibrator-desc">Answers <em>"Can we trust this survey's data?"</em> 5-check quality control on speed, wind, and GPS prevents false alarms and rejects corrupted mobile surveys.</p>
+          
+          <!-- Example Selector Buttons -->
+          <div class="qc-toggle-group">
+            <button class="btn-qc-example active" id="btnQCHighExample" data-example="high">
+              <span class="qc-btn-dot dot-pass"></span>
+              <span>High Confidence (S-2101)</span>
+            </button>
+            <button class="btn-qc-example" id="btnQCLowExample" data-example="low">
+              <span class="qc-btn-dot dot-fail"></span>
+              <span>Low Confidence (S-2201)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Active QC Evaluation Card -->
+        <div class="qc-card-container" id="qcCardContainer">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Digital Pipeline Safety Map & Clearance Blueprint Modal (PRD §8A & §12) -->
+  <div class="modal-backdrop" id="modalSafetyBlueprint" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-row">
+          <div class="modal-badge-row">
+            <span class="badge-modal">PNGRB INTEGRITY DIRECTIVE</span>
+            <span class="badge-modal-id" id="blueprintNoticeId">DIG-801</span>
+          </div>
+          <h2 class="modal-title">Underground Gas Pipeline Safety Blueprint &amp; Clearance</h2>
+          <span class="modal-subtitle">Authorized Digital Route Map Issued to Excavation Contractor</span>
+        </div>
+        <button class="modal-close-btn" id="btnCloseBlueprintModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="blueprint-summary-grid">
+          <div class="bp-info-cell">
+            <span class="bp-label">CONTRACTOR ENTITY:</span>
+            <span class="bp-val" id="bpContractorName">Metro Fiber Net / Municipal Water</span>
+          </div>
+          <div class="bp-info-cell">
+            <span class="bp-label">TARGET PIPELINE SEGMENT:</span>
+            <span class="bp-val highlight-blue" id="bpSegmentId">P-104 (Chandni Chowk Market)</span>
+          </div>
+          <div class="bp-info-cell">
+            <span class="bp-label">MANDATORY BUFFER:</span>
+            <span class="bp-val" id="bpProximityBuffer">50.0 m Exclusion Zone</span>
+          </div>
+          <div class="bp-info-cell">
+            <span class="bp-label">SUPERVISING PATROL OFFICER:</span>
+            <span class="bp-val" id="bpAssignedMonitor">Patrol Officer R. Sharma</span>
+          </div>
+        </div>
+
+        <!-- Cross-Section Depth Diagram -->
+        <div class="depth-cross-section">
+          <div class="cross-section-header">
+            <span class="cs-title">UNDERGROUND DEPTH CLASH ANALYSIS</span>
+            <span class="cs-tag" id="bpClashTag">DEPTH CLASH HAZARD DETECTED</span>
+          </div>
+          <div class="depth-visual-diagram">
+            <div class="depth-surface-line">
+              <span class="surface-marker">GROUND LEVEL (0.0 m)</span>
+            </div>
+            <div class="depth-strata">
+              <div class="pipe-depth-indicator" id="bpPipeDepthIndicator" style="top: 35%;">
+                <span class="indicator-icon">🟢</span>
+                <span class="indicator-text">Gas Pipeline Burial Depth: <strong id="bpPipeDepthVal">0.8 m</strong></span>
+              </div>
+              <div class="dig-depth-indicator" id="bpDigDepthIndicator" style="top: 65%;">
+                <span class="indicator-icon">🚜</span>
+                <span class="indicator-text">Contractor Trench Depth: <strong id="bpDigDepthVal">1.5 m</strong> (EXCEEDS PIPE DEPTH!)</span>
+              </div>
+            </div>
+          </div>
+          <div class="safety-rule-alert">
+            <strong>CRITICAL DIRECTIVE:</strong> Proposed trenching exceeds buried pipeline depth. Mechanical excavators (JCB/Backhoe) are STRICTLY PROHIBITED within 5 meters of centerline. Only manual hand-digging under utility patrol supervision is permitted.
+          </div>
+        </div>
+
+        <!-- Clearance Certificate Box -->
+        <div class="clearance-cert-box">
+          <div class="cert-left">
+            <span class="cert-code-label">DIGITAL CLEARANCE HASH:</span>
+            <span class="cert-code" id="bpClearanceHash">METHANOS-CLR-801-DELHI-2026</span>
+          </div>
+          <div class="cert-right">
+            <span class="cert-status" id="bpCertStatus">MONITORED CLEARANCE ISSUED</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-action btn-copy-link" id="btnCopyBlueprintLink">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span>Copy Blueprint Link</span>
+        </button>
+        <button class="btn-modal-action btn-download-bp" id="btnDownloadBlueprint">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Acknowledge &amp; Issue to Contractor</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emergency Incident Report / Pipeline Strike Modal (PRD §8B & §12) -->
+  <div class="modal-backdrop" id="modalEmergencyIncident" style="display: none;">
+    <div class="modal-card modal-card-emergency">
+      <div class="modal-header header-emergency">
+        <div class="modal-title-row">
+          <div class="modal-badge-row">
+            <span class="badge-modal badge-emergency-alert">🚨 IMMEDIATE CRITICAL BYPASS</span>
+            <span class="badge-modal-id">CONTROL ROOM DISPATCH</span>
+          </div>
+          <h2 class="modal-title">Report Emergency Pipeline Strike / Excavation Puncture</h2>
+          <span class="modal-subtitle">Instant queue bypass: Forces target segment score to 100/100 (CRITICAL)</span>
+        </div>
+        <button class="modal-close-btn" id="btnCloseEmergencyModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="emergency-form-group">
+          <label class="form-label">TARGET PIPELINE SEGMENT:</label>
+          <select class="form-select" id="emergencySegmentSelect">
+            <!-- Populated with all segments -->
+          </select>
+        </div>
+
+        <div class="emergency-form-group">
+          <label class="form-label">INCIDENT / BREACH TYPE:</label>
+          <select class="form-select" id="emergencyTypeSelect">
+            <option value="third_party_strike">Third-Party Mechanical Excavator Strike (Puncture)</option>
+            <option value="unauthorized_boring">Unauthorized Trenchless Boring Impact</option>
+            <option value="joint_rupture">PE Service Riser Shear / Joint Rupture</option>
+            <option value="severe_ch4_burst">Spontaneous Methane Plume Burst (&gt;50 ppm)</option>
+          </select>
+        </div>
+
+        <div class="emergency-form-group">
+          <label class="form-label">FIELD REPORTER / CALLER:</label>
+          <input type="text" class="form-input" id="emergencyReporterInput" value="Delhi Metro Road Construction Team">
+        </div>
+
+        <div class="emergency-impact-box">
+          <div class="impact-title">🚨 OPERATIONAL OVERRIDE IMPACT</div>
+          <ul class="impact-list">
+            <li>Priority score locks to <strong>100 / 100 (CRITICAL)</strong> instantly</li>
+            <li>Status shifts to <strong>Direct Excavation Hazard</strong> in Priority Engine</li>
+            <li>Bypasses standard 12-day survey cycle — immediate Isolation Squad dispatched</li>
+            <li>Pipeline flashes red on GIS map and jumps to #1 in queue</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal-footer footer-emergency">
+        <button class="btn-modal-action btn-cancel-emergency" id="btnCancelEmergency">Cancel</button>
+        <button class="btn-modal-action btn-trigger-emergency" id="btnSubmitEmergencyIncident">
+          <span class="strobe-dot"></span>
+          <span>TRIGGER CRITICAL ESCALATION (100 PTS)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3-Column Team Route & Dispatch Board Modal (PRD §11 & §12) -->
+  <div class="modal-backdrop" id="modalRouteDispatch" style="display: none;">
+    <div class="modal-card modal-card-dispatch">
+      <div class="modal-header header-dispatch">
+        <div class="modal-title-row">
+          <div class="modal-badge-row">
+            <span class="badge-modal badge-dispatch-tag">OPTIMIZED FLEET ROUTING</span>
+            <span class="badge-modal-id">PRD §11 &bull; 3-TEAM ASSIGNMENT</span>
+          </div>
+          <h2 class="modal-title">Dynamic Route &amp; Team Assignment Board</h2>
+          <span class="modal-subtitle">Prioritized daily patrol assignments driven by real-time risk tiers, excavation conflicts, and equipment capabilities</span>
+        </div>
+        <button class="modal-close-btn" id="btnCloseDispatchModal">&times;</button>
+      </div>
+
+      <div class="modal-body body-dispatch">
+        <!-- 3-Column Board Container -->
+        <div class="dispatch-board-grid">
+          <!-- Column 1: Team Alpha -->
+          <div class="dispatch-column col-team-alpha">
+            <div class="team-col-header">
+              <div class="team-col-top">
+                <span class="team-name">TEAM ALPHA</span>
+                <span class="team-status-tag tag-online">MOBILE VAN #1</span>
+              </div>
+              <h4 class="team-equipment">High-Sensitivity CRDS Methane Sniffer</h4>
+              <p class="team-role-desc">Assigned to <strong>CRITICAL Tiers</strong> and immediate leak indications. Max van speed 20 km/h.</p>
+              <div class="team-col-stats">
+                <span class="team-stat-item">Target: <strong id="teamAlphaCount">2 Segments</strong></span>
+                <span class="team-stat-item">Avg Score: <strong id="teamAlphaAvgScore">86.5</strong></span>
+              </div>
+            </div>
+            <div class="team-cards-list" id="teamAlphaCardsList">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Column 2: Team Beta -->
+          <div class="dispatch-column col-team-beta">
+            <div class="team-col-header">
+              <div class="team-col-top">
+                <span class="team-name">TEAM BETA</span>
+                <span class="team-status-tag tag-online">MOBILE VAN #2</span>
+              </div>
+              <h4 class="team-equipment">TDLAS High-Speed Laser Sniffing Van</h4>
+              <p class="team-role-desc">Assigned to <strong>HIGH Tiers</strong> and arterial steel feeder lines across industrial corridors.</p>
+              <div class="team-col-stats">
+                <span class="team-stat-item">Target: <strong id="teamBetaCount">3 Segments</strong></span>
+                <span class="team-stat-item">Avg Score: <strong id="teamBetaAvgScore">74.2</strong></span>
+              </div>
+            </div>
+            <div class="team-cards-list" id="teamBetaCardsList">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Column 3: Team Gamma -->
+          <div class="dispatch-column col-team-gamma">
+            <div class="team-col-header">
+              <div class="team-col-top">
+                <span class="team-name">TEAM GAMMA</span>
+                <span class="team-status-tag tag-patrol">FOOT PATROL &amp; K9</span>
+              </div>
+              <h4 class="team-equipment">Handheld Flame Ionization &amp; Optical Sniffers</h4>
+              <p class="team-role-desc">Assigned to <strong>MEDIUM &amp; LOW Tiers</strong>, narrow bazaar alleyways, and rodent hotspots inaccessible to vans.</p>
+              <div class="team-col-stats">
+                <span class="team-stat-item">Target: <strong id="teamGammaCount">7 Segments</strong></span>
+                <span class="team-stat-item">Avg Score: <strong id="teamGammaAvgScore">38.4</strong></span>
+              </div>
+            </div>
+            <div class="team-cards-list" id="teamGammaCardsList">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer footer-dispatch">
+        <div class="dispatch-footer-info">
+          <span class="summary-line">💡 <em>"Team Alpha should visit P-104 today"</em> — PRD §12 Demo Conclusion</span>
+        </div>
+        <button class="btn-modal-action btn-export-routes" id="btnExportRoutesGeoJSON">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Export Dispatch Manifest (JSON)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive 7-Step Hackathon Demo Script Stepper (PRD §12) -->
+  <div class="floating-demo-bar" id="floatingDemoBar" style="display: none;">
+    <div class="demo-bar-left">
+      <div class="demo-step-badge" id="demoStepBadge">STEP 1 OF 7</div>
+      <div class="demo-step-content">
+        <h4 class="demo-step-title" id="demoStepTitle">1. Geospatial Network &amp; GIS Profile</h4>
+        <p class="demo-step-desc" id="demoStepDesc">Show full Delhi CGD grid with 12 pipeline segments color-coded by PNGRB priority tiers with GIS depth and pressure.</p>
+      </div>
+    </div>
+    <div class="demo-bar-controls">
+      <button class="btn-demo-nav btn-demo-prev" id="btnDemoPrevStep" disabled>&larr; Prev</button>
+      <button class="btn-demo-nav btn-demo-action" id="btnDemoExecuteStep">
+        <span>Execute Step 1</span>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+      </button>
+      <button class="btn-demo-nav btn-demo-next" id="btnDemoNextStep">Next &rarr;</button>
+      <button class="btn-demo-close" id="btnCloseDemoGuide" title="Close Demo Guide">&times;</button>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- App JS -->
+  <script src="app.js"></script>
+</body>
+</html>
